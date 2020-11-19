@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+    <title>My page title</title>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Lobster+Two' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../style.css">
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body class="iframe">
+    <p id="message-output">Message not yet sent</p>
+    <form>
+        <label for="message-input">Send a message:</label>
+        <div style="display:flex;">
+            <input type="text" id="message-input" autofocus>
+        </div>
+        <button id="btnTest">Send</button>
+    </form>
+  </body>
+  <script>
+    var input = document.getElementById('message-input');
+    var output = document.getElementById('message-output');
+    var btnTest = document.getElementById('btnTest');
+
+    // Wait for the iframe to load
+    window.parent.addEventListener("load", function() {
+        btnTest.addEventListener('click', fnBtnTest);
+    });
+
+    function fnBtnTest(e) {
+      console.log("fnBtnTest -> e", e)
+      console.log("fnBtnTest -> e", e.target)
+      e.preventDefault();
+      if (input.value.length > 0) {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = onMessage;
+        window.parent.postMessage("", "*", [channel.port2]);
+        channel.port1.postMessage(input.value);
+      }
+    }
+
+    // Handle messages received on port1
+    function onMessage(e) {
+      console.log("onMessage -> e", e)
+      console.log("%cRecebido de index.html", "color:aqua;");
+      output.innerHTML = e.data;
+      input.value = "";
+    }
+  </script>
+</html>
