@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+    <title>Channel messaging demo</title>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Lobster+Two' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="style.css">
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <h1>Channel Messaging Multimessage + Web Worker</h1>
+    <iframe src="page2.html"></iframe>
+    <ul></ul>
+  </body>
+  <script>
+    var list = document.querySelector('ul');
+    
+    // Listen for the intial port transfer message
+    window.addEventListener('message', (event) => {
+    console.log("event", event);
+      event.ports[0].onmessage = function (evt) {
+        console.log("%c@evt.data =", "color:aqua;", evt.data);
+        var listItem = document.createElement('li');
+        listItem.textContent = evt.data;
+        list.appendChild(listItem);
+        // de index.html para page2.html
+        event.ports[0].postMessage('Message received from index.html: "' + evt.data + '"');
+        // close channel messaging
+        event.ports[0].close();
+      };
+    });
+  </script>
+</html>
